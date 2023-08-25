@@ -15,6 +15,7 @@ const saltRounds = 10;
 //     console.log(result);
 // }
 
+
 // testHashFunction();
 
 const getAllUsers = async (req, res) => {
@@ -37,7 +38,7 @@ const addUser = async (req, res) => {
 
     */
     let newUser = req.body;
-    console.log(newUser);
+    // console.log(newUser);
     newUser.id = crypto.randomUUID();
     newUser.hashedPassword = await bcrypt.hash(newUser.password,saltRounds);
     newUser.createdAt = new Date;
@@ -50,16 +51,39 @@ const addUser = async (req, res) => {
         console.log(error);
         return res.send("Error");
     }
-
-
 }
 
 const updateUser = async (req, res) => {
-
+    let userUpdateInfor = req.body;
+    let userID = userUpdateInfor.id;
+    console.log(userUpdateInfor);
+    try{
+        //Need to code more to check username, email unique before updating.
+        await model.User.update(userUpdateInfor,{
+            where: {
+                id: userID
+            }
+        });
+        res.send("Update user successfully!");
+    }
+    catch(error){
+        res.send("Update fail!");
+    }
 }
 
 const deleteUser = async (req, res) => {
-
+    let {id} = req.body;
+    try{
+        await model.User.destroy({
+            where: {
+                id: id
+            }
+        })
+        res.send("Delete successfully")
+    }
+    catch(error){
+        res.send("Delete fail!");
+    }
 }
 
 module.exports = {
